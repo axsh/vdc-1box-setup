@@ -1,0 +1,1 @@
+../bin/vdc-1box-setup

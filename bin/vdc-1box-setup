@@ -1,0 +1,61 @@
+#!/bin/bash
+#
+# description:
+#
+# requires:
+#  bash
+#  rsync, init
+#
+
+function vdc_1box_deploy() {
+  local target_dir=$1
+  [[ -n "${target_dir}" ]] || { echo "[ERROR] Invalid argument: target_dir:${target_dir} (${BASH_SOURCE[0]##*/}:${LINENO})" >&2; return 1; }
+
+  rsync -av ${BASH_SOURCE[0]%/*}/../templates/ ${target_dir}
+}
+
+function vdc_1box_make_symlink() {
+  local target_dir=$1
+  [[ -n "${target_dir}" ]] || { echo "[ERROR] Invalid argument: target_dir:${target_dir} (${BASH_SOURCE[0]##*/}:${LINENO})" >&2; return 1; }
+
+  cd ${target_dir}/vmapp-vdc-1box
+
+  local line src_path
+  while read line; do
+    src_path="../${line}"
+    [ -f "${src_path}" -o -d "${src_path}" ] || continue
+    ln -fs ${src_path}
+  done < <(cat <<-EOS
+	copy.local.txt
+	copy.local.i686.txt
+	copy.local.x86_64.txt
+	postcopy.local.txt
+	postcopy.local.i686.txt
+	postcopy.local.x86_64.txt
+	guestroot.local
+	EOS)
+}
+
+function vdc_1box_setup_git() {
+  local target_dir=$1
+  [[ -n "${target_dir}" ]] || { echo "[ERROR] Invalid argument: target_dir:${target_dir} (${BASH_SOURCE[0]##*/}:${LINENO})" >&2; return 1; }
+
+  cd ${target_dir}
+
+  [[ -d .git       ]] || git init
+  [[ -f .gitmodule ]] || git submodule add https://github.com/axsh/vmapp-vdc-1box.git
+}
+
+function vdc_1box_cli() {
+  local target_dir=${1:-vmbuilder-box}
+  [[ -n "${target_dir}" ]] || { echo "[ERROR] Invalid argument: target_dir:${target_dir} (${BASH_SOURCE[0]##*/}:${LINENO})" >&2; return 1; }
+
+  vdc_1box_deploy ${target_dir}
+  (vdc_1box_setup_git ${target_dir})
+  (vdc_1box_make_symlink ${target_dir})
+}
+
+# CLI
+if [[ "${BASH_SOURCE[0]##*/}" == "vdc-1box-setup" ]]; then
+  vdc_1box_cli $@
+fi
