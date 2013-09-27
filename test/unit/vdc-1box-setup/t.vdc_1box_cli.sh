@@ -24,12 +24,12 @@ function tearDown() {
 
 function test_vdc_1box_cli_no_opts() {
   vdc_1box_cli
-  assertEquals $? 0
+  assertEquals 0 $?
 }
 
 function test_vdc_1box_cli_opts() {
   vdc_1box_cli ${target_dir}
-  assertEquals $? 0
+  assertEquals 0 $?
 }
 
 ## shunit2

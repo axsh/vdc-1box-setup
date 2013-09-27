@@ -23,12 +23,12 @@ function tearDown() {
 
 function test_vdc_1box_setup_git_no_opts() {
   (vdc_1box_setup_git >/dev/null)
-  assertNotEquals $? 0
+  assertNotEquals 0 $?
 }
 
 function test_vdc_1box_setup_git_opts() {
   (vdc_1box_setup_git ${target_dir} >/dev/null)
-  assertEquals $? 0
+  assertEquals 0 $?
 }
 
 ## shunit2

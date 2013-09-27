@@ -22,12 +22,12 @@ function tearDown() {
 
 function test_vdc_1box_deploy_no_opts() {
   vdc_1box_deploy >/dev/null
-  assertNotEquals $? 0
+  assertNotEquals 0 $?
 }
 
 function test_vdc_1box_deploy_opts() {
   vdc_1box_deploy ${target_dir} >/dev/null
-  assertEquals $? 0
+  assertEquals 0 $?
 }
 
 ## shunit2
